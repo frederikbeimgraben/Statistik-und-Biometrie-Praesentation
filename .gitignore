@@ -1,0 +1,28 @@
+# Ignore build/
+build/*
+*.pdf
+*.log
+*.aux
+*.out
+*.toc
+*.bbl
+*.blg
+*.bcf*
+*.run.xml
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.xdv
+*.bak
+svg-inkscape/
+*.tex~
+*.bib~*
+*.nav
+*.snm
+*-blx.bib
+*(busy)
+
+# Exception for demo/
+!demo/*
