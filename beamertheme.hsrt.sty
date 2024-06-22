@@ -1,0 +1,238 @@
+\ProvidesPackage{beamertheme.hsrt}
+
+% Load required packages
+\RequirePackage{graphicx}
+\RequirePackage{tikz}
+\RequirePackage{fontspec}
+\RequirePackage{svg}
+\RequirePackage{geometry}
+\RequirePackage{biblatex} % Add the biblatex package for bibliography management
+\RequirePackage{caption} % Add the caption package for customizing figure captions
+
+% Define fonts
+\newfontfamily\blenderfont[
+  Path=assets/fonts/Blender/,
+  Extension=.ttf,
+  UprightFont=*-Medium,
+  BoldFont=*-Bold,
+  ItalicFont=*-MediumItalic,
+  BoldItalicFont=*-BoldItalic
+]{Blender}
+\newfontfamily\dinfont[
+  Path=assets/fonts/DIN/,
+  Extension=.ttf,
+  UprightFont=*-Regular,
+  BoldFont=*-Bold,
+  ItalicFont=*-Italic,
+  BoldItalicFont=*-BoldItalic,
+  SmallCapsFont=*-Regular,
+]{DIN}
+\newfontfamily\FA[
+  Path=assets/fonts/FA/,
+  Extension=.otf,
+  UprightFont=*-Regular,
+  BoldFont=*-Solid
+]{FontAwesome}
+
+\RequirePackage{fontawesome5} % Add the fontawesome package for icons
+
+% Set default font as DIN
+\setsansfont{DIN}[
+  SmallCapsFont = DIN-Regular,
+  ItalicFeatures  = {SmallCapsFont=DIN-Italic}
+]
+
+% Set main font to Blender
+\setmainfont{Blender}
+
+% Define colors
+\definecolor{hsrtgray}{RGB}{112,113,115}
+\definecolor{hsrtlightgray}{RGB}{217,217,217}
+
+% Set aspect ratio to 16:9
+\geometry{paperwidth=16cm, paperheight=9cm}
+
+% Set title page logo
+\titlegraphic{
+  \includesvg[width=2cm]{assets/img/logo-main.svg}
+}
+
+\newcommand{\footerYShift}{0.6em} % Added the new variable
+\newcommand{\footerXShift}{0.7em} % Added the new variable
+
+\definecolor{linkcolor}{HTML}{aeaee1}
+
+% Define footer bar
+\defbeamertemplate*{footline}{custom footline}{
+  \begin{tikzpicture}[overlay, remember picture]
+    % Move the footer_bar up by more
+    \node[anchor=south west, inner sep=0pt, yshift=1.8em] at (current page.south west) {
+      \includesvg[width=\paperwidth]{assets/img/footer_bar.svg}
+    };
+    % Position the date on the left below the footer_bar, further outwards
+    \node[anchor=south west, inner sep=0pt, xshift=\footerXShift, yshift=\footerYShift] at (current page.south west) {
+      \color{hsrtlightgray} \textbf{\tiny \blenderfont \insertshortdate}
+    };
+    % Position the page number on the right below the footer_bar, further outwards
+    \node[anchor=south east, inner sep=0pt, xshift=-\footerXShift, yshift=\footerYShift] at (current page.south east) {
+      \color{hsrtlightgray} 
+      \hyperlink{toc}{\textbf{\tiny\blenderfont \page~\insertframenumber}}
+    };
+    % Bookmark button left to page number
+    %\node[anchor=south west, inner sep=0pt, xshift=1.9cm, yshift=0.35em] at (current page.south) {
+    %  \color{linkcolor}
+    %  \hyperlink{toc}{\tiny\faBookmark}
+    %};
+  \end{tikzpicture}
+}
+\setbeamertemplate{footline}[custom footline]
+
+% Redefine navigation symbols to be centered
+\setbeamertemplate{navigation symbols}{
+  \begin{tikzpicture}[overlay, remember picture]
+    \node[anchor=south, inner sep=0pt, yshift=0.4em] at (current page.south) {
+      \insertslidenavigationsymbol
+      \insertframenavigationsymbol
+      \insertsubsectionnavigationsymbol
+      \insertsectionnavigationsymbol
+      \hyperlink{toc}{\insertdocnavigationsymbol}
+    };
+    
+    \node[anchor=north east, inner sep=0pt, yshift=-0.4em, xshift=-0.4em] at (current page.north east) {
+      \hyperlink{texInfo}{\TeX{}}
+    };
+    
+  \end{tikzpicture}
+}
+
+% Define title page logo above the footer bar
+\newcommand{\titlepagelogoright}{
+  \begin{tikzpicture}[overlay, remember picture]
+    \node[anchor=south east, inner sep=0pt, xshift=-0.5cm, yshift=1.75em] at (current page.south east) {
+      \includesvg[width=3cm]{assets/img/logo-main.svg}
+    };
+  \end{tikzpicture}
+}
+
+% Title page modifications
+\defbeamertemplate*{title page}{customized}[1][]{
+  \vspace{2cm}
+  \begin{flushleft}
+    \usebeamerfont{title}\Huge\inserttitle\par
+    \usebeamerfont{subtitle}\LARGE\insertsubtitle\par
+    \vspace{1em} % Add some vertical space between subtitle and author
+    \usebeamerfont{author}\color{hsrtgray}\small\insertauthor\par % Make the author text smaller and gray
+    \vspace{1em} % Add some vertical space before the date
+    \usebeamerfont{date}\insertdate\par
+    \titlegraphic\par
+  \end{flushleft}
+  \titlepagelogoright % Add the logo on the right above the footer bar
+}
+\setbeamertemplate{title page}[customized]
+
+% Custom section page template
+\defbeamertemplate*{section page}{customized}{
+  \begin{flushleft}
+    \vspace{2cm}
+    \usebeamerfont{section title}\Huge\insertsection\par
+    \usebeamerfont{subsection title}\color{hsrtgray}\Large\subheader\par
+  \end{flushleft}
+}
+
+% Custom subsection page template
+\defbeamertemplate*{subsection page}{customized}{
+  \begin{flushleft}
+    \vspace{2cm}
+    \usebeamerfont{subsection title}\huge\insertsubsection\par
+    \usebeamerfont{subsubsection title}\color{hsrtgray}\large\subheader\par
+  \end{flushleft}
+}
+
+% Define frametitle style and move it further to the right
+\setbeamerfont{frametitle}{size=\LARGE,series=\bfseries,family=\blenderfont}
+\setbeamercolor{frametitle}{fg=hsrtgray}
+\addtobeamertemplate{frametitle}{}{\vspace{-1em}\hspace{2cm}} % Move frametitle further to the right
+
+% Define framesubtitle style
+\setbeamerfont{framesubtitle}{size=\normalsize,family=\dinfont}
+\setbeamercolor{framesubtitle}{fg=hsrtgray}
+
+% Define section style
+\setbeamerfont{section in toc}{size=\large,family=\blenderfont}
+\setbeamercolor{section in toc}{fg=hsrtgray}
+
+% Define subsection style
+\setbeamerfont{subsection in toc}{size=\normalsize,family=\dinfont}
+\setbeamercolor{subsection in toc}{fg=hsrtgray}
+
+% Define itemize/enumerate body style
+\setbeamerfont{itemize/enumerate body}{size=\small,family=\dinfont}
+\setbeamercolor{itemize/enumerate body}{fg=hsrtgray}
+
+% Define itemize/enumerate subbody style
+\setbeamerfont{itemize/enumerate subbody}{size=\scriptsize,family=\dinfont}
+\setbeamercolor{itemize/enumerate subbody}{fg=hsrtgray}
+
+% Custom itemize style (monochrome)
+\setbeamertemplate{itemize item}{\color{hsrtgray}$\bullet$}
+\setbeamertemplate{itemize subitem}{\color{hsrtgray}$\circ$}
+\setbeamertemplate{itemize subsubitem}{\color{hsrtgray}$\diamond$}
+
+% Custom ToC style; Flat Bullet style
+\setbeamertemplate{section in toc}[sections numbered]
+\setbeamertemplate{subsection in toc}[subsections numbered]
+
+% Monochrome bullets for ToC
+\setbeamercolor{section number projected}{bg=hsrtgray,fg=white}
+\setbeamercolor{subsection number projected}{bg=hsrtgray,fg=white}
+\setbeamercolor{item projected}{fg=hsrtgray}
+\setbeamercolor{subitem projected}{fg=hsrtgray}
+
+% Bibliography style
+\setbeamertemplate{bibliography item}{\color{hsrtgray}\insertbiblabel}
+\defbibenvironment{bibliography}
+  {\list
+     {\printtext[labelnumberwidth]{%
+        \printfield{labelprefix}%
+        \printfield{labelnumber}}}
+     {\setlength{\labelwidth}{\labelnumberwidth}%
+      \setlength{\leftmargin}{\labelwidth}%
+      \setlength{\labelsep}{\biblabelsep}%
+      \addtolength{\leftmargin}{\labelsep}%
+      \setlength{\itemsep}{\bibitemsep}%
+      \setlength{\parsep}{\bibparsep}}%
+      \renewcommand*{\makelabel}[1]{\hss##1}}
+  {\endlist}
+  {\item}
+
+% Set Beamer fonts to use the custom fonts
+\setbeamerfont{title}{family=\blenderfont}
+\setbeamerfont{subtitle}{family=\blenderfont}
+\setbeamerfont{author}{family=\blenderfont}
+\setbeamerfont{date}{family=\blenderfont}
+\setbeamerfont{frametitle}{family=\blenderfont}
+\setbeamerfont{framesubtitle}{family=\dinfont}
+\setbeamerfont{section in toc}{family=\blenderfont,series=\bfseries}
+\setbeamerfont{subsection in toc}{family=\blenderfont}
+\setbeamerfont{itemize/enumerate body}{family=\dinfont}
+\setbeamerfont{itemize/enumerate subbody}{family=\dinfont}
+\setbeamerfont{footline}{family=\blenderfont}
+\setbeamerfont{bibliography item}{family=\blenderfont}
+\setbeamerfont{bibliography entry author}{family=\dinfont}
+\setbeamerfont{bibliography entry title}{family=\dinfont\itshape}
+\setbeamerfont{bibliography entry location}{family=\dinfont}
+\setbeamerfont{bibliography entry note}{family=\dinfont\itshape}
+\setbeamercolor{bibliography entry author}{fg=hsrtgray}
+\setbeamercolor{bibliography entry title}{fg=hsrtgray}
+\setbeamercolor{bibliography entry location}{fg=hsrtgray}
+\setbeamercolor{bibliography entry note}{fg=hsrtgray}
+
+% Adjust figure caption style
+\DeclareCaptionFont{figurefont}{\small\blenderfont\color{hsrtgray}}
+\captionsetup[figure]{labelfont={figurefont,bf},textfont={figurefont},labelformat=simple,labelsep=colon}
+
+% Adjust list of figures style
+\setbeamerfont{list of figures}{family=\blenderfont,series=\bfseries}
+\setbeamercolor{list of figures}{fg=hsrtgray}
+
+\endinput

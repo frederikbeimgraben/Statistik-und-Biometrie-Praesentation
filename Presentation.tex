@@ -1,0 +1,47 @@
+%!TEX program = xelatex
+
+\documentclass{beamer}
+
+% Required Imports
+\usepackage[utf8]{inputenc}
+\usepackage[autostyle]{csquotes}
+\usepackage[USenglish,ngerman]{babel}
+\usepackage{etoolbox}
+\usepackage{pgffor}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage{ifthen}
+\usepackage[style=ieee]{biblatex}
+\usepackage{caption}
+\addbibresource{references.bib}
+
+% Settings
+\input{Settings}
+\input{TeX/TeX}
+
+% Apply theme
+\usetheme{.hsrt}
+
+\begin{document}
+  \begin{frame}
+    \titlepage
+  \end{frame}
+
+  \input{builtin-slides/X1_content.tex}
+
+  %%%%% Slides %%%%%
+  
+  % Add more slides here
+  \SetTranslationKey{\demoSectionSubtitle}{Demonstrationen und Beispiele}{Demos and Examples}
+  \section[\demoSectionSubtitle]{\demoSectionSubtitle}
+
+  \input{slides/01_bullets}
+  \input{slides/02_figure}
+
+  %%%%%%%%%%%%%%%%%%
+  \input{builtin-slides/X8_literature.tex}
+  \input{builtin-slides/X9_document_end.tex}
+\end{document}

@@ -1,0 +1,20 @@
+% Command to format literature references based on the IEEE style using the parameters:
+% 1. bibitem label
+% 2. Authors
+% 3. Title
+% 4. Publishing year
+% 5. DOI (Create clickable link if provided); Omit if no DOI
+% 6. URL (Alternative to DOI); Omit if no URL
+% 7. Note (Optional)
+% Usage: \Literature{Authors}{Title}{Conference}{Year}{DOI}{URL}{Note}
+
+\SetTranslationKey{\literature}{Literatur}{Literature}
+
+\SetTranslationKey{\sourcesText}{Quellen}{Sources}
+
+\section[\sourcesText]{\literature}
+
+% Literature references
+\begin{frame}
+    \printbibliography[title={\sourcesText},heading=none]
+\end{frame}

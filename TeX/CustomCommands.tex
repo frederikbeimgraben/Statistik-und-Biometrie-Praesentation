@@ -1,0 +1,136 @@
+\newcommand{\subheader}{}
+
+\newcommand{\SetSubheader}[1]{%
+  \renewcommand{\subheader}{#1}%
+}
+
+% Renew \section to accept another argument for the subtitle; Last argument is the subheader
+\let\oldsection\section
+
+\renewcommand{\section}[2][]{%
+  \SetSubheader{#1}
+  \ifthenelse{\equal{#1}{}}{%
+    \oldsection{#2}
+  }{%
+    \oldsection[#1]{#2}
+  }
+}
+
+% Renew \subsection to accept another argument for the subtitle; Last argument is the subheader
+\let\oldsubsection\subsection
+
+\renewcommand{\subsection}[2][]{%
+  \SetSubheader{#1}
+  \ifthenelse{\equal{#1}{}}{%
+    \oldsubsection{#2}
+  }{%
+    \oldsubsection[#1]{#2}
+  }
+}
+
+\newcommand{\subsectionwithpage}[2][]{
+  \SetSubheader{#1}
+  \ifthenelse{\equal{#1}{}}{%
+    \oldsubsection{#2}
+  }{%
+    \oldsubsection[#1]{#2}
+  }
+  \begin{frame}
+    \subsectionpage
+  \end{frame}
+}
+
+\AtBeginSection[]
+{
+  \begin{frame}
+    \sectionpage
+  \end{frame}
+}
+
+\newcommand{\ExternalLinkSymbol}{%
+    \tikz[x=1.2ex, y=1.2ex, baseline=-0.05ex]{% 
+        \begin{scope}[x=1ex, y=1ex]
+            \clip (-0.1,-0.1) 
+                --++ (-0, 1.2) 
+                --++ (0.6, 0) 
+                --++ (0, -0.6) 
+                --++ (0.6, 0) 
+                --++ (0, -1);
+            \path[draw, 
+                line width = 0.5, 
+                rounded corners=0.5] 
+                (0,0) rectangle (1,1);
+        \end{scope}
+        \path[draw, line width = 0.5] (0.5, 0.5) 
+            -- (1, 1);
+        \path[draw, line width = 0.5] (0.6, 1) 
+            -- (1, 1) -- (1, 0.6);
+        }
+    }
+
+\newcommand{\ExternalLink}[2]{
+    \href{#1}{#2 \ExternalLinkSymbol}
+}
+
+\SetTranslationKey{\published}{Veröffentlicht}{Published}
+
+\newcommand{\Literature}[7]{
+    % Parameters:
+    % - citekey     : Required
+    % - Authors     : Required
+    % - Title       : Required
+    % - Year        : Required
+    % - Journal     : Optional
+    % - DOI         : Optional
+    % - Note        : Optional
+
+    % Local variables
+    \def\citekey{#1}
+    \def\authors{#2}
+    \def\title{#3}
+    \def\year{#4}
+    \def\journal{#5}
+    \def\doi{#6}
+    \def\note{#7}
+
+    % Actual output
+    \bibitem{citekey}
+    \blenderfont
+    \textbf{\authors}\\
+    \emph{\title}\\
+    \emph{\published}~\year~\ifthenelse{\equal{\journal}{}}{}{\emph{in}~\journal}\\
+    % Check if DOI is a full URL - if so omit the DOI prefix
+    \ifthenelse{\equal{\doi}{}}{}{%
+        DOI:~\ExternalLink{http://dx.doi.org/\doi}{\doi}
+    }
+    \note
+}
+
+% Command to include image with a caption
+\newcommand{\ImagePage}[6][0.5\paperheight]{
+    % Parameters:
+    % - Path        : Required
+    % - Caption     : Required
+    % - Source      : Optional
+
+    % Local variables
+    \def\imageheight{#1}
+    \def\labelid{#2}
+    \def\path{#3}
+    \def\captiontext{#4}
+    \def\sourceURL{#5}
+    \def\sourceCaption{#6}
+
+    % Actual output
+    \begin{frame}
+        \frametitle{\captiontext}
+        \begin{figure}
+            \includegraphics[height=\imageheight]{\path}
+            \caption{
+                \captiontext\\
+                \ifthenelse{\equal{\sourceURL}{}}{}{\ExternalLink{\sourceURL}{\sourceCaption}}
+            }
+            \label{fig:\labelid}
+        \end{figure}
+    \end{frame}
+}

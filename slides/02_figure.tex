@@ -1,0 +1,26 @@
+% Demo for a figure in beamer mode
+
+\SetTranslationKey{\figureCaption}{Testbild für JPEG Artefakte}{Test image for JPEG artifacts}
+
+\subsectionwithpage[]{\figureCaption}
+
+% Use the holy JPEG Artifact test image in demo/demoImage.jpeg
+\begin{frame}
+  \frametitle{\figureCaption}
+  \begin{figure}
+    \includegraphics[width=0.4\textwidth]{demo/demoImage.jpeg}
+    \caption{
+        \figureCaption\\
+        \ExternalLink{https://www.researchgate.net/publication/51166820_Image_file_formats}{ResearchGate}
+    }
+    \label{fig:demoImage}
+  \end{figure}
+\end{frame}
+
+% Webimage demo
+
+\SetTranslationKey{\secondFigureCaption}{Captain Picard}{Captain Picard}
+
+\subsectionwithpage[]{\secondFigureCaption}
+
+\ImagePage{picard-facepalm}{demo/picard-facepalm.jpg}{\secondFigureCaption}{https://knowyourmeme.com/memes/facepalm}{KnowYourMeme}
