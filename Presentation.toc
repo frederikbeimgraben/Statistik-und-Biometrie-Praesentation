@@ -1,7 +1,0 @@
-\babel@toc {ngerman}{}\relax 
-\babel@toc {ngerman}{}\relax 
-\beamer@sectionintoc {1}{Demonstrationen und Beispiele}{3}{0}{1}
-\beamer@subsectionintoc {1}{1}{Stichpunkte}{4}{0}{1}
-\beamer@subsectionintoc {1}{2}{Testbild für JPEG Artefakte}{9}{0}{1}
-\beamer@subsectionintoc {1}{3}{Captain Picard}{11}{0}{1}
-\beamer@sectionintoc {2}{Literatur}{13}{0}{2}
