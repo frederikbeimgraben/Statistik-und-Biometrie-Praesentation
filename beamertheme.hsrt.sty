@@ -24,8 +24,7 @@
   UprightFont=*-Regular,
   BoldFont=*-Bold,
   ItalicFont=*-Italic,
-  BoldItalicFont=*-BoldItalic,
-  SmallCapsFont=*-Regular,
+  BoldItalicFont=*-BoldItalic
 ]{DIN}
 \newfontfamily\FA[
   Path=assets/fonts/FA/,
@@ -35,15 +34,6 @@
 ]{FontAwesome}
 
 \RequirePackage{fontawesome5} % Add the fontawesome package for icons
-
-% Set default font as DIN
-\setsansfont{DIN}[
-  SmallCapsFont = DIN-Regular,
-  ItalicFeatures  = {SmallCapsFont=DIN-Italic}
-]
-
-% Set main font to Blender
-\setmainfont{Blender}
 
 % Define colors
 \definecolor{hsrtgray}{RGB}{112,113,115}
