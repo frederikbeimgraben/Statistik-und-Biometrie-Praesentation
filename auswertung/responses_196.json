@@ -1,0 +1,171 @@
+
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr"
+      class="en dir-ltr  no-js " 
+      xmlns="http://www.w3.org/1999/html">
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <link rel="stylesheet" type="text/css" href="/tmp/assets/b7f367ee/ibm-sans.css" />
+<link rel="stylesheet" type="text/css" href="/tmp/assets/5fcf812e/ibm-serif.css" />
+<link rel="stylesheet" type="text/css" href="/tmp/assets/1a6462c9/css/font-awesome.min.css" />
+<link rel="stylesheet" type="text/css" href="/tmp/assets/5603c9a5/remixicon.css" />
+<link rel="stylesheet" type="text/css" href="/tmp/assets/e0295364/build/embeddables.min.css" />
+<link rel="stylesheet" type="text/css" href="/tmp/assets/2030c736/css/variations/theme_apple.css" />
+<link rel="stylesheet" type="text/css" href="/tmp/assets/2030c736/css/base.css" />
+<link rel="stylesheet" type="text/css" href="/tmp/assets/2030c736/css/custom.css" />
+<link rel="stylesheet" type="text/css" href="/tmp/assets/1048c2fd/promotionalBanners.css" />
+<script type='text/javascript'>window.debugState = {frontend : (0 === 1), backend : (0 === 1)};</script><script type="text/javascript" src="/tmp/assets/15ce26c2/jquery.min.js" class="headScriptTag"></script>
+<script type="text/javascript" src="/tmp/assets/bea5bfb9/jquery-migrate.min.js" class="headScriptTag"></script>
+<script type="text/javascript" src="/tmp/assets/8f887653/moment-with-locales.min.js" class="headScriptTag"></script>
+<script type="text/javascript" src="/tmp/assets/c897496e/em_javascript.js" class="headScriptTag"></script>
+<script type="text/javascript" src="/tmp/assets/31c13613/build/lslog.js" class="headScriptTag"></script>
+<script type="text/javascript" src="/tmp/assets/b60a07f1/pjax.js" class="headScriptTag"></script>
+<script type="text/javascript" src="/tmp/assets/2030c736/scripts/theme.js" class="headScriptTag"></script>
+<script type="text/javascript" src="/tmp/assets/2030c736/scripts/custom.js" class="headScriptTag"></script>
+<title>
+                    400: Bad Request
+            </title>
+
+    <meta name="generator" content="LimeSurvey http://www.limesurvey.org"/>
+            <link rel="shortcut icon" href="/tmp/assets/994e7094/favicon.ico"/>
+    </head>
+
+<body class="error-page fruity_twentythree lang-en " marginwidth="0"
+      marginheight="0" ><script type="text/javascript" src="/tmp/assets/1d1c05f9/decimal.js"></script>
+<script type="text/javascript" src="/tmp/assets/59c683a6/decimalcustom.js"></script>
+<script type="text/javascript">
+/*<![CDATA[*/
+                function getBannerHtml() {
+                    
+                    return "<div id=\"promotional-banner\" class=\"text-center fw-bold m-2 alert alert-info alert-dismissible fade show\" data-href=\"\/plugins\/direct\/plugin\/LimeSurveyProfessional\/function\/updateBannersAcknowledgedObject\" data-bid=\"4\" role=\"alert\">Change your survey site url to surveyname.survey-research.net. <a href=\"https:\/\/account.limesurvey.org\/pricing\" target=\"_blank\">Upgrade to our Expert plan.<\/a><button type=\"button\" class=\"btn-close \" data-bs-dismiss=\"alert\" aria-label=\"Close\" name=\"yt0\"><\/button><\/div>";
+                }
+/*]]>*/
+</script>
+<script type="text/javascript" id="lemscripts">
+/*<![CDATA[*/
+var LEMmode='group';
+var LEMgseq='';
+ExprMgr_process_relevance_and_tailoring = function(evt_type,sgqa,type){
+if (typeof LEM_initialized == 'undefined') {
+LEM_initialized=true;
+LEMsetTabIndexes();
+}
+if (evt_type == 'onchange' && (typeof last_sgqa !== 'undefined' && sgqa==last_sgqa) && (typeof last_evt_type !== 'undefined' && last_evt_type == 'TAB' && type != 'checkbox')) {
+  last_evt_type='onchange';
+  last_sgqa=sgqa;
+  return;
+}
+if (evt_type == 'updated'  && (typeof last_sgqa !== 'undefined' && sgqa==last_sgqa)) {
+  last_evt_type='updated';
+  last_sgqa=sgqa;
+  return;
+}
+last_evt_type = evt_type;
+last_sgqa=sgqa;
+
+}
+
+/*]]>*/
+</script>
+
+    <div class="container m-auto ">
+        <div class="row align-items-center">
+            <div class="col">
+                <h2 class="error-title">
+                                            400: Bad Request
+                                         - Der CSRF-Token konnte nicht verifiziert werden.
+                </h2>
+                <div class="error-content">The request could not be understood by the server due to malformed syntax. Please do not repeat the request without modifications.</div>
+                                    If you think this is a server error, please contact Your Name.
+                                            </div>
+            <div class="col d-flex">
+                              <img class="m-auto" src="/tmp/assets/f89671ce/error.png" alt="Survey Error" />
+                          </div>      
+        </div>
+    </div>
+    
+<div id="datapolicy">
+    <div class="container">
+        <div class="row text-center datapolicy-links">
+            <div class="col">
+                                                            </div>
+        </div>
+    </div>
+
+    <!-- Privacy policy Modal -->
+    <div class="modal fade" id="datapolicy-modal" tabindex="-1" role="dialog" aria-labelledby="Privacy policy">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="datapolicy-label">Privacy policy</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <div class="modal-body">
+                                            
+                                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Legal notice Modal -->
+    <div class="modal fade" id="legalnotice-modal" tabindex="-1" role="dialog"
+         aria-labelledby="Legal notice">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="legalnotice-label">Legal notice</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <div class="modal-body">
+                                            
+                                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="/tmp/assets/e0295364/build/embeddables.min.js"></script>
+<script type="text/javascript" src="/tmp/assets/d424ebc8/promotionalBanner.js"></script>
+<script type="text/javascript">
+/*<![CDATA[*/
+
+        if($('.non-ajax-alert').length > 0) {
+            var alertContainer = $('.non-ajax-alert');
+            LS.autoCloseAlert(alertContainer, 3000);
+        }
+        
+
+            try{ 
+                triggerEmClassChange(); 
+            } catch(e) {
+                console.ls.warn('triggerEmClassChange could not be run. Is survey.js/old_template_core_pre.js correctly loaded?');
+            }
+
+triggerEmRelevance();
+jQuery(function($) {
+$('body').append("<!-- Modal for feature preview -->\n<div id=\"feature_preview_modal\" class=\"modal fade\" role=\"dialog\">\n    <div class=\"modal-dialog modal-lg\">\n        <!-- Modal content-->\n        <div class=\"modal-content\">\n            <div class=\"modal-header\">\n                <h5 class=\"modal-title\">\n                    Feature preview                <\/h5>\n                <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\" aria-label=\"Close\"><\/button>\n            <\/div>\n            <div class=\"modal-body\">\n                                    <div class=\"card card-primary h-100\">\n                        <div class=\"card-body\">\n                            <div class=\"row\">\n                                <div class=\"col-md-3\">\n                                    <h6 class=\"card-title\"> Question Editor <\/h6>\n                                <\/div>\n                                <div class=\"col-md-2\">\n                                    <img src=\"\/assets\/images\/beta_logo_purple.png\" class=\"d-inline-block\">\n                                <\/div>\n                            <\/div>\n                            <div class=\"row\">\n                                <div class=\"col-md-10\">\n                                    <p class=\"card-text\"> With the LimeSurvey Question Editor you can create surveys in a squeeze of a lime. Discover our completely re-invented, smart question editor. <\/p>\n                                <\/div>\n                                <div class=\"col-md-2\">\n                                    \n<div class=\"btn-group text-option-inherit\" data-bs-toggle=\"tooltip\" title=\"\"\n     id=\"betaSwitchButton\" role=\"group\"\n     aria-label=\"\"\n    >\n                <input type=\"radio\" class=\"btn-check\" name=\"betaSwitchButton\" id=\"betaSwitchButton_1\" autocomplete=\"off\"\n               value=\"1\"  >\n        <label class=\"btn btn-outline-secondary\" for=\"betaSwitchButton_1\">On<\/label>\n                    <input type=\"radio\" class=\"btn-check\" name=\"betaSwitchButton\" id=\"betaSwitchButton_2\" autocomplete=\"off\"\n               value=\"0\" checked >\n        <label class=\"btn btn-outline-secondary\" for=\"betaSwitchButton_2\">Off<\/label>\n            <\/div>\n                                <\/div>\n                            <\/div>\n                            <a href=\"\/admin\/question_\" class=\"card-link\"> Open new editor <\/a>\n                        <\/div>\n                    <\/div>\n                                <\/div>\n            <div class=\"modal-footer\">\n                <button type=\"button\" class=\"btn btn-outline-secondary\" data-bs-dismiss=\"modal\">Close<\/button>\n            <\/div>\n        <\/div>\n    <\/div>\n<\/div>\n");
+});
+jQuery(document).off('pjax:scriptcomplete.mainBottom').on('ready pjax:scriptcomplete.mainBottom', function() {
+updateMandatoryErrorClass();
+});
+/*]]>*/
+</script>
+</body>
+</html>

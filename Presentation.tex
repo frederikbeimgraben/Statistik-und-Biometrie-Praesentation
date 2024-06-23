@@ -13,9 +13,11 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{tikz}
+\usetikzlibrary{shadows,calc}
 \usepackage{ifthen}
 \usepackage[style=ieee]{biblatex}
 \usepackage{caption}
+\usepackage[outline]{contour}
 \addbibresource{references.bib}
 
 % Settings
@@ -33,13 +35,8 @@
   \input{builtin-slides/X1_content.tex}
 
   %%%%% Slides %%%%%
-  
-  % Add more slides here
-  \SetTranslationKey{\demoSectionSubtitle}{Demonstrationen und Beispiele}{Demos and Examples}
-  \section[\demoSectionSubtitle]{\demoSectionSubtitle}
-
-  \input{slides/01_bullets}
-  \input{slides/02_figure}
+  \input{slides/01_goal.tex}
+  \input{slides/02_methods.tex}
 
   %%%%%%%%%%%%%%%%%%
   \input{builtin-slides/X8_literature.tex}

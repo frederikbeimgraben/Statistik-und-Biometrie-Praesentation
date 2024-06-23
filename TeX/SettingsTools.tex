@@ -21,12 +21,10 @@
 
 \DeclareRobustCommand{\ChooseTranslation}[2]{%
   \ifthenelse{\equal{\lang}{\de}}{
-    \renewcommand{\translationResult}{#1}
+    #1
   }{
-    \renewcommand{\translationResult}{#2}
+    #2
   }
-
-  \translationResult
 }
 
 \DeclareRobustCommand{\SetTranslationKey}[3]{

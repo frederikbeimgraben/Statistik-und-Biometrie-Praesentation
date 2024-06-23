@@ -23,6 +23,7 @@ svg-inkscape/
 *.snm
 *-blx.bib
 *(busy)
+*SAVE-ERROR
 
 # Exception for demo/
 !demo/*
