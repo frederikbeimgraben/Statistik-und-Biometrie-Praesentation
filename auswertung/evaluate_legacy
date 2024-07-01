@@ -1,0 +1,115 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Evaluation of the results of the survey (source: LimeSurvey)
+"""
+
+import json
+from typing import Dict
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+import os
+
+from argparse import ArgumentParser
+
+parser = ArgumentParser()
+parser.add_argument("-i", "--input", dest="input", help="Input file")
+args = parser.parse_args()
+
+# Load the data
+INPUT_PATH = args.input
+
+# Function to load the data (JSON)
+def load_data(input_path) -> dict:
+    assert os.path.exists(input_path), f"File not found: {input_path}"
+    assert input_path.endswith('.json'), f"Invalid file format: {input_path}"
+
+    data: dict = None
+
+    with open(input_path, 'r') as f:
+        try:
+            data = json.load(f)
+        except json.JSONDecodeError as e:
+            print(f"Error while parsing JSON: {e}")
+            return None
+    return data
+
+# Load the data
+DATA = load_data(INPUT_PATH)
+
+# Write the data to a pandas DataFrame
+def write_to_dataframe(data: dict) -> pd.DataFrame:
+    df = pd.DataFrame(data['responses'])
+    return df
+
+# Write the data to a pandas DataFrame
+df = write_to_dataframe(DATA)
+
+# Print column names
+print(df.columns)
+
+# Make multiple groups by primary mode of transportation (G04Q01[1])
+grouped = df.groupby('G04Q01[1]')
+
+# Get group AO01
+group_AO01 = grouped.get_group('AO01') # Car
+group_AO02 = grouped.get_group('AO02') # By foot
+group_AO03 = grouped.get_group('AO03') # Public transportation
+group_AO04 = grouped.get_group('AO04') # Bicycle
+group_AO05 = grouped.get_group('AO05') # Carpooled
+
+# Create Histograms for Group vs:
+#  - G01Q02 (faculty)
+#  - G04Q04 (money spent on transportation)
+#  - G04Q05 (distance to campus in km)
+#  - G04Q06 (time spent on transportation)
+
+LABELS_GROUPS = {
+    'AO01': 'Car',
+    'AO02': 'By foot',
+    'AO03': 'Public transportation',
+    'AO04': 'Bicycle',
+    'AO05': 'Carpooled'
+}
+
+def create_histogram(df, labels_groups, labels_x_axis, question, title):
+    df_group = df.groupby(['G01Q02', 'G04Q01[1]']).size().unstack()
+    df_group = df_group.fillna(0)
+    df_group = df_group.reindex(columns=labels_groups.keys())
+    df_group = df_group.reindex(index=labels_x_axis.keys())
+
+    # Divide each group by their total respectively
+    df_group = df_group.div(df_group.sum(axis=1), axis=0)
+
+    # Rename the columns and index based on the labels
+    df_group.columns = [labels_groups[col] for col in df_group.columns]
+    df_group.index = [labels_x_axis[ind] for ind in df_group.index]
+
+    df_group.plot(kind='bar', stacked=True, title=title)
+    plt.xlabel('Faculty')
+    plt.ylabel('Number of students')
+    plt.show()
+
+# Create a histogram for G01Q02 (faculty)
+LABELS_FACULTIES = {
+    f'AO0{i+1}': f for i, f in enumerate(
+        ['INF', 'LS', 'ESB', 'TEC', 'TEX', 'other']
+    )
+}
+
+create_histogram(df, LABELS_GROUPS, LABELS_FACULTIES, 'G01Q02', 'Faculty distribution by primary mode of transportation')
+
+# Create a boxplot for G04Q04[SQ001] (money spent on transportation);
+df['G04Q04[SQ001]'] = df['G04Q04[SQ001]'].replace(' ', np.nan)
+df['G04Q04[SQ001]'] = df['G04Q04[SQ001]'].astype(float)
+df.boxplot(column='G04Q04[SQ001]', by='G04Q01[1]')
+
+# Rename the x-axis labels
+plt.xticks([1, 2, 3, 4, 5],  [LABELS_GROUPS[col] for col in LABELS_GROUPS.keys()])
+
+plt.title('Money spent on transportation by primary mode of transportation')
+plt.xlabel('Primary mode of transportation')
+plt.ylabel('Money spent on transportation')
+plt.show()

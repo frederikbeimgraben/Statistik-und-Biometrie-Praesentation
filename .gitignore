@@ -27,3 +27,14 @@ svg-inkscape/
 
 # Exception for demo/
 !demo/*
+
+# Python
+*.pyc
+__pycache__/
+*.egg-info/
+*.egg
+*.pyo
+*.pyd
+*.pyc
+
+.env/
