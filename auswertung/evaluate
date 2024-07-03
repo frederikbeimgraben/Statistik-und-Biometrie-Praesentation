@@ -37,6 +37,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+from classes import Question
 import questions as q
 
 import os
@@ -46,6 +47,17 @@ from argparse import ArgumentParser
 parser = ArgumentParser()
 parser.add_argument("-i", "--input", dest="input", help="Input file")
 args = parser.parse_args()
+
+# Constants
+# #F9F9F9 #ffe45e #58a4b0 #FF6392 #3C1642 
+COLOR_PALETTE = [
+    '#EE6352',
+    '#E4B7E5',
+    '#58A4B0',
+    '#484D6D',
+    '#FFFC99',
+    '#48ACF0'
+]
 
 # Load the data
 INPUT_PATH = args.input
@@ -76,52 +88,121 @@ def write_to_dataframe(data: dict) -> pd.DataFrame:
 # Write the data to a pandas DataFrame
 df = write_to_dataframe(DATA)
 
-# Print column names
-print(df.columns)
+# Save fig class that can be used in a with-statement
+class SaveFig(Figure):
+    def __init__(self, filename: str, folder: str='images'):
+        assert '/' not in filename, f"Invalid filename: {filename}"
 
-# Decorator to create a figure and save it to a png file in ./images
-def save_fig(path: str):
-    if not os.path.exists('./images'):
-        os.makedirs('./images')
+        self.filename = os.path.join(folder, filename)
+        super().__init__()
 
-    if not path.endswith('.png'):
-        path = path + '.png'
+    def __enter__(self):
+        return self
 
-    def decorator(func: Callable[..., None]):
-        def wrapper(*args, **kwargs):
-            fig = plt.figure()
-            func(fig, *args, **kwargs)
-            fig.savefig(f'./images/{path}')
-        return wrapper
-    return decorator
-    
-# Function to normalize a dataframe for a set of groups defined by a column
-def normalize(df: pd.DataFrame, column: str) -> pd.DataFrame:
-    grouped = df.groupby(column)
-    normalized = pd.DataFrame()
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if not os.path.exists(os.path.dirname(self.filename)):
+            os.makedirs(os.path.dirname(self.filename))
 
-    for name, group in grouped:
-        group = group.drop(columns=[column])
-        group = group.apply(pd.to_numeric, errors='coerce')
-        group = group.div(group.sum(axis=1), axis=0)
-        group[column] = name
-        normalized = normalized.append(group)
+        format = self.filename.split('.')[-1]
 
-    return normalized
+        self.savefig(self.filename, format=format)
 
 # Function to create a histogram for a set of groups defined by a column and a feature to plot (x-Axis: Group, y-Axis: Count of normalized values as stacked bars)
-def create_histogram(fig: Figure, df: pd.DataFrame, labels_groups: Dict[str, str], labels_x_axis: Dict[str, str], question: str, title: str):
-    df_group = df.groupby([question, 'G04Q01[1]']).size().unstack()
-    df_group = df_group.fillna(0)
-    df_group = normalize(df_group, 'G04Q01[1]')
-    df_group = df_group.rename(columns=labels_groups)
-    df_group = df_group.rename(columns=labels_x_axis)
+def create_histogram_options(fig: Figure, df: pd.DataFrame, x_groups: Question, y_feature: Question, title: str, normalize=False, color_palette=COLOR_PALETTE, counts_text_color='black'):
+    # Create a new DataFrame with the counts of the values
+    counts = df.groupby([x_groups.code, y_feature.code]).size().unstack().fillna(0)
 
-    df_group.plot(kind='bar', stacked=True, ax=fig.gca())
-    plt.title(title)
-    plt.xlabel(labels_x_axis[question])
-    plt.ylabel('Normalized count')
-    plt.legend(title='Primary mode of transportation', bbox_to_anchor=(1.05, 1), loc='upper left')
+    # Rename the feature columns
+    counts.columns = [y_feature.text_of_option(col) for col in counts.columns]
 
-# Create a group for the Faculties (G01Q02)
-GROUP_FACULTY = df.groupby()
+    # Remove all columns that are None
+    try:
+        counts = counts.drop(columns=[None])
+    except KeyError:
+        pass
+
+    # Rename the group columns
+    counts.index = [x_groups.text_of_option(col) for col in counts.index]
+
+    # Normalize the values
+    if normalize:
+        counts_norm = counts.div(counts.sum(axis=1), axis=0)
+    else:
+        counts_norm = counts
+
+    # Plot the values
+    ax = counts_norm.plot(kind='bar', stacked=True, figsize=(10, 6), title=title, ax=fig.gca(), color=color_palette)
+    ax.set_xlabel(x_groups.text)
+    ax.set_ylabel('Shares per group' if normalize else 'Count')
+
+    # Get text size based on length
+    max_len = max([len(str(col)) for col in counts_norm.index])
+    text_size = 20 * (1 / (max_len / 10 + 1))
+
+    # Adjust x-Axis text-size and orientation to fit the image
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=0, ha='center', va='top', fontsize=text_size)
+
+    # Add Counts text of whole group to the top of the bars
+    for group in counts_norm.index:
+        total_height = ax.get_ylim()[1]
+        bars_stacked_height = counts_norm.loc[group].sum()
+
+        center = (total_height - bars_stacked_height) / 2 + bars_stacked_height
+
+        ax.text(
+            # At the position of the group
+            x=counts_norm.index.get_loc(group),
+            # At the top of the bar
+            y=center if normalize else (counts_norm.loc[group].max()),
+            s=f"{counts.loc[group].sum():.0f}",
+            ha='center', va='center' if normalize else 'bottom', color=counts_text_color
+        )
+
+    # Add the legend
+    ax.legend(title=y_feature.text)
+
+def create_histogram(fig: Figure, df: pd.DataFrame, x_groups: Question, y_feature: Question, title: str, normalize=False, color_palette=COLOR_PALETTE, counts_text_color='black'):
+    if x_groups.type == q.QuestionType.OPTIONS:
+        if y_feature.type == q.QuestionType.OPTIONS:
+            create_histogram_options(fig, df, x_groups, y_feature, title, normalize, color_palette, counts_text_color)
+        else:
+            raise NotImplementedError(f"Feature type {y_feature.type} not implemented")
+    else:
+        raise NotImplementedError(f"Group type {x_groups.type} not implemented")
+
+# Filter all rows, that haven't answered G06Q01
+df = df[df[q.G06Q01.code].notnull()]
+
+# Role (G01Q01)
+with SaveFig('role_counts.svg') as fig:
+    create_histogram(fig, df, q.G01Q01, q.G01Q01, 'Role counts')
+
+# Filter all Rows, that are not Students (AO01 in G01Q01)
+df = df[df[q.G01Q01.code] == 'AO01']
+
+# Counts for the different faculties
+FACULTIES_COLOR_PALETTE = [
+    '#707173',
+    '#FFCC00',
+    '#F08A00',
+    '#13235B',
+    '#0076BD',
+    '#CD0529'
+]
+
+with SaveFig('faculty_counts.svg') as fig:
+    create_histogram(fig, df, q.G01Q02, q.G01Q02, 'Faculty counts', color_palette=FACULTIES_COLOR_PALETTE)
+
+# Faculty vs Mode of transportation
+for rank in range(1, 4):
+    with SaveFig(f'faculty_vs_transportation_rank_{rank}.svg') as fig:
+        create_histogram(fig, df, q.G01Q02, q.G04Q01.ranking_nth_question(rank), f'Faculty vs Mode of transportation (Rank {rank})', normalize=True)
+
+# Ticket ownership vs Mode of transportation
+# for rank in range(1, 4):
+#     with SaveFig(f'ticket_vs_transportation_rank_{rank}.svg') as fig:
+#         create_histogram(fig, df, q.G04Q07, q.G04Q01.ranking_nth_question(rank), f'Ticket ownership vs Mode of transportation (Rank {rank})', normalize=True)
+
+# Faculty vs Ticket ownership
+with SaveFig(f'faculty_vs_ticket_rank_{rank}.svg') as fig:
+    create_histogram(fig, df, q.G01Q02, q.G04Q07, f'Faculty vs Ticket ownership (Rank {rank})', normalize=True)
