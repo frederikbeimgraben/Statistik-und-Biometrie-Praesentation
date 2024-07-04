@@ -20,6 +20,7 @@
         \item \ChooseTranslation{Featurereiche Umfrageplattform}{Feature-rich survey platform}
         \item \ChooseTranslation{Übliches Tool für wissenschaftliche Umfragen}{Standard tool for scientific surveys}
         \item \ChooseTranslation{Open Source}{Open Source}
+        \item \ChooseTranslation{Einfache Übersetzung}{Easy translation}
         \item \ChooseTranslation{Selbst hostbar}{Self-hostable}
         \begin{itemize}
           \item \ChooseTranslation{In unserem Fall Business-Edition bei LimeSurvey gehostet}{In our case Business Edition hosted by LimeSurvey}
@@ -78,7 +79,7 @@
     \end{column}
     \begin{column}{0.3\textwidth}
       \begin{figure}
-        \shadowsvg[height=0.6\textheight]{images/Plakat.svg}
+        \shadowimage[height=0.6\textheight]{images/tt_02.png}
         \caption{
             \ChooseTranslation{Table Tent}{Table Tent}
         }
@@ -167,6 +168,34 @@
             \begin{figure}
                 \shadowimage[width=0.8\textwidth]{images/ranking.png}
                 \label{fig:ranking}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+% Fragen ; Zusammenfassung aller Fragen; Happens outside of presentation -> Add Link to survey and QR code
+\def\surveyURL{https://hsrtdeutschlandticket.limesurvey.net/192761?lang=de}
+
+\begin{frame}
+    \frametitle{\methodsQuestionsTitle}
+
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{itemize}
+                \item \ChooseTranslation{Insgesamt 20 Fragen}{A total of 20 questions}
+                \item \ChooseTranslation{Link zur Umfrage}{Link to the survey}
+                \begin{itemize}
+                    \item \ExternalLink{\surveyURL}{Survey.Reutlingen.University}
+                \end{itemize}
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \includesvg[width=0.6\textwidth]{images/qr_code.svg}
+                \caption{
+                    \ChooseTranslation{QR-Code zur Umfrage}{QR code to the survey}
+                }
+                \label{fig:qrCode}
             \end{figure}
         \end{column}
     \end{columns}

@@ -35,7 +35,6 @@ class QuestionType(Enum):
     OPTIONS = 'options'
     RANKING = 'ranking'
     TEXT = 'text'
-    YESNO = 'yesno'
     NUMBER = 'number'
 
 # Labels for the groups

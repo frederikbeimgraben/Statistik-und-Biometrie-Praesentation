@@ -29,7 +29,7 @@ G01Q02 = Question(
         'AO03': 'ESB',
         'AO04': 'TEC',
         'AO05': 'TEX',
-        'AO06': 'other'
+        '-oth-': 'Other'
     },
     QuestionType.OPTIONS
 )
@@ -42,7 +42,7 @@ G01Q03 = Question(
         'Y': 'Yes',
         'N': 'No'
     },
-    QuestionType.YESNO
+    QuestionType.OPTIONS
 )
 
 # Older than 26 (Yes, No)
@@ -53,7 +53,7 @@ G01Q04 = Question(
         'Y': 'Yes',
         'N': 'No'
     },
-    QuestionType.YESNO
+    QuestionType.OPTIONS
 )
 
 # Knowledge of Deutschlandticket (Very bad to Very good; 4 Options)
@@ -87,7 +87,7 @@ G03Q01 = Question(
     'G03Q01',
     'Informed opinion on Deutschlandticket',
     {
-        'AO01': 'Very opposed',
+        'AO01': 'Strongly opposed',
         'AO02': 'Opposed',
         'AO03': 'Supportive',
         'AO04': 'Very supportive'
@@ -140,7 +140,7 @@ G04Q03 = Question(
 
 # Amount of money spent on transportation per month (0 to 100+; 5 Options)
 G04Q04 = Question(
-    'G04Q04',
+    'G04Q04[SQ001]',
     'Amount of money spent on transportation per month',
     {},
     QuestionType.NUMBER
@@ -148,7 +148,7 @@ G04Q04 = Question(
 
 # Distance between home and university (0 to 100+; 5 Options)
 G04Q05 = Question(
-    'G04Q05',
+    'G04Q05[SQ001]',
     'Distance between home and university',
     {},
     QuestionType.NUMBER
@@ -156,7 +156,7 @@ G04Q05 = Question(
 
 # Time from home to university (0 to 360+; 5 Options)
 G04Q06 = Question(
-    'G04Q06',
+    'G04Q06[SQ001]',
     'Time from home to university',
     {},
     QuestionType.NUMBER
@@ -169,9 +169,9 @@ G04Q07 = Question(
     {
         'AO01': 'Deutschlandticket',
         'AO02': 'JugendBW-Ticket',
-        'AO03': 'Naldo Semesterticket',
-        'AO04': 'Kein vergleichbares Ticket',
-        'AO05': 'Sonstiges'
+        'AO03': 'Naldo Semester Ticket',
+        'AO04': 'No comparable ticket',
+        '-oth-': 'Other'
     },
     QuestionType.OPTIONS
 )
@@ -192,18 +192,18 @@ G05Q01 = Question(
 # Stance on the named conditions for the full solidarity model: Amount justified?
 G06Q01 = Question(
     'G06Q01',
-    'Stance on the named conditions for the full solidarity model',
+    'Is the Amount reasonable?',
     {
         'Y': 'Yes',
         'N': 'No'
     },
-    QuestionType.YESNO
+    QuestionType.OPTIONS
 )
 
 # Stance on the named conditions for the full solidarity model: What amount is justified?
 G06Q02 = Question(
-    'G06Q02',
-    'Stance on the named conditions for the full solidarity model',
+    'G06Q02[SQ001]',
+    'Justified amount for the full solidarity model',
     {},
     QuestionType.NUMBER
 )
@@ -211,7 +211,7 @@ G06Q02 = Question(
 # Stance on the named conditions for the full solidarity model: Fairness (Very unfair to Very fair; 4 Options)
 G06Q03 = Question(
     'G06Q03',
-    'Stance on the named conditions for the full solidarity model',
+    'Stance on the fairness of the full solidarity model',
     {
         'AO01': 'Very unfair',
         'AO02': 'Unfair',

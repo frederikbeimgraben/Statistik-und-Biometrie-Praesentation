@@ -97,6 +97,7 @@ class SaveFig(Figure):
         super().__init__()
 
     def __enter__(self):
+        print(f'\x1b[1;32m[INFO]\x1b[0m Making {self.filename}')
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -108,7 +109,7 @@ class SaveFig(Figure):
         self.savefig(self.filename, format=format)
 
 # Function to create a histogram for a set of groups defined by a column and a feature to plot (x-Axis: Group, y-Axis: Count of normalized values as stacked bars)
-def create_histogram_options(fig: Figure, df: pd.DataFrame, x_groups: Question, y_feature: Question, title: str, normalize=False, color_palette=COLOR_PALETTE, counts_text_color='black'):
+def create_histogram_options(fig: Figure, df: pd.DataFrame, x_groups: Question, y_feature: Question, title: str, normalize=False, graph_mode='bars', color_palette=COLOR_PALETTE, counts_text_color='black', custom_y_text=None, custom_x_text=None):
     # Create a new DataFrame with the counts of the values
     counts = df.groupby([x_groups.code, y_feature.code]).size().unstack().fillna(0)
 
@@ -131,9 +132,12 @@ def create_histogram_options(fig: Figure, df: pd.DataFrame, x_groups: Question, 
         counts_norm = counts
 
     # Plot the values
-    ax = counts_norm.plot(kind='bar', stacked=True, figsize=(10, 6), title=title, ax=fig.gca(), color=color_palette)
-    ax.set_xlabel(x_groups.text)
-    ax.set_ylabel('Shares per group' if normalize else 'Count')
+    if graph_mode == 'bars':
+        ax = counts_norm.plot(kind='bar', stacked=True, figsize=(10, 6), title=title, ax=fig.gca(), color=color_palette)
+    else:
+        raise ValueError(f"Invalid type: {graph_mode}")
+    ax.set_xlabel(x_groups.text if custom_x_text is None else custom_x_text)
+    ax.set_ylabel('Shares per group' if normalize else 'Count' if custom_y_text is None else custom_y_text)
 
     # Get text size based on length
     max_len = max([len(str(col)) for col in counts_norm.index])
@@ -161,10 +165,22 @@ def create_histogram_options(fig: Figure, df: pd.DataFrame, x_groups: Question, 
     # Add the legend
     ax.legend(title=y_feature.text)
 
-def create_histogram(fig: Figure, df: pd.DataFrame, x_groups: Question, y_feature: Question, title: str, normalize=False, color_palette=COLOR_PALETTE, counts_text_color='black'):
+def create_histogram(fig: Figure, df: pd.DataFrame, x_groups: Question, y_feature: Question, title: str, normalize=False, color_palette=COLOR_PALETTE, counts_text_color='black', graph_mode='bars', custom_y_text=None, custom_x_text=None):
     if x_groups.type == q.QuestionType.OPTIONS:
         if y_feature.type == q.QuestionType.OPTIONS:
-            create_histogram_options(fig, df, x_groups, y_feature, title, normalize, color_palette, counts_text_color)
+            create_histogram_options(
+                fig=fig,
+                df=df,
+                x_groups=x_groups,
+                y_feature=y_feature,
+                title=title,
+                normalize=normalize,
+                color_palette=color_palette,
+                counts_text_color=counts_text_color,
+                graph_mode=graph_mode,
+                custom_y_text=custom_y_text,
+                custom_x_text=custom_x_text
+            )
         else:
             raise NotImplementedError(f"Feature type {y_feature.type} not implemented")
     else:
@@ -190,13 +206,24 @@ FACULTIES_COLOR_PALETTE = [
     '#CD0529'
 ]
 
+COLOR_PALETTE_MAPPED = {
+    'INF': FACULTIES_COLOR_PALETTE[1],
+    'LS': FACULTIES_COLOR_PALETTE[2],
+    'ESB': FACULTIES_COLOR_PALETTE[3],
+    'TEC': FACULTIES_COLOR_PALETTE[4],
+    'TEX': FACULTIES_COLOR_PALETTE[5]
+}
+
 with SaveFig('faculty_counts.svg') as fig:
-    create_histogram(fig, df, q.G01Q02, q.G01Q02, 'Faculty counts', color_palette=FACULTIES_COLOR_PALETTE)
+    create_histogram(fig, df, q.G01Q02, q.G01Q02, 'Results by faculty', color_palette=FACULTIES_COLOR_PALETTE)
 
 # Faculty vs Mode of transportation
 for rank in range(1, 4):
     with SaveFig(f'faculty_vs_transportation_rank_{rank}.svg') as fig:
-        create_histogram(fig, df, q.G01Q02, q.G04Q01.ranking_nth_question(rank), f'Faculty vs Mode of transportation (Rank {rank})', normalize=True)
+        # Drop -oth-
+        df_without_oth = df[df[q.G01Q02.code] != '-oth-']
+
+        create_histogram(fig, df_without_oth, q.G01Q02, q.G04Q01.ranking_nth_question(rank), f'Faculty vs Mode of transportation (Rank {rank})', normalize=True)
 
 # Ticket ownership vs Mode of transportation
 # for rank in range(1, 4):
@@ -204,5 +231,277 @@ for rank in range(1, 4):
 #         create_histogram(fig, df, q.G04Q07, q.G04Q01.ranking_nth_question(rank), f'Ticket ownership vs Mode of transportation (Rank {rank})', normalize=True)
 
 # Faculty vs Ticket ownership
-with SaveFig(f'faculty_vs_ticket_rank_{rank}.svg') as fig:
-    create_histogram(fig, df, q.G01Q02, q.G04Q07, f'Faculty vs Ticket ownership (Rank {rank})', normalize=True)
+with SaveFig(f'faculty_vs_ticket.svg') as fig:
+    # Drop -oth-
+    df_without_oth = df[df[q.G01Q02.code] != '-oth-']
+
+    create_histogram(fig, df_without_oth, q.G01Q02, q.G04Q07, f'Faculty vs Ticket ownership', normalize=True)
+
+# Manual graph: faculty distribution normalized to the total count of students per faculty
+## "Faculty distribution adjusted to the total count of students per faculty"
+TOTAL_UNIVERSITY = 5000
+
+FACULTY_SIZES = {
+    'AO01': TOTAL_UNIVERSITY * 0.206, # INF
+    'AO02': TOTAL_UNIVERSITY * 0.096, # LS
+    'AO03': TOTAL_UNIVERSITY * 0.414, # ESB
+    'AO04': TOTAL_UNIVERSITY * 0.170, # TEC
+    'AO05': TOTAL_UNIVERSITY * 0.114, # TEX
+}
+
+## Divide each column by the faculty size
+with SaveFig(f'faculty_distribution_normalized.svg') as fig:
+    counts = df.groupby([q.G01Q02.code, q.G01Q02.code]).size().unstack().fillna(0)
+
+    # Drop index -oth-
+    counts = counts.drop(columns=['-oth-'])
+
+    # Drop index -oth-
+    counts = counts.drop(index=['-oth-'])
+
+    # Divide each column by the faculty size
+    counts = counts.div([FACULTY_SIZES[col] for col in counts.columns], axis=1)
+
+    # Rename the group columns
+    counts.index = [q.G01Q02.text_of_option(col) for col in counts.index]
+
+    # Rename the feature columns
+    counts.columns = [q.G01Q02.text_of_option(col) for col in counts.columns]
+
+    # Multiply by 100 to get percentage
+    counts = counts * 100
+
+    # Plot the values
+    ax = counts.plot(kind='bar', stacked=True, figsize=(10, 6), title='Results by faculty adjusted to the total count of students per faculty', ax=fig.gca(), color=FACULTIES_COLOR_PALETTE[1:])
+
+    ax.set_xlabel(q.G01Q02.text)
+    ax.set_ylabel('% of students per faculty')
+
+# Pie Chart for the share of students per faculty (not the questionnaire but in general)
+#with SaveFig('faculty_pie_chart.svg') as fig:
+#    ax = fig.gca()
+#
+#    ax.pie([FACULTY_SIZES[col] for col in FACULTY_SIZES], labels=[q.G01Q02.text_of_option(col) for col in FACULTY_SIZES], autopct='%1.1f%%', startangle=90, colors=FACULTIES_COLOR_PALETTE[1:])
+#    ax.axis('equal')
+#
+#    # Bold labels
+#    for text in ax.texts:
+#        if '%' in text.get_text():
+#            fg = 'white'
+#            bg = 'black'
+#        else:
+#            fg = 'white'
+#            bg = COLOR_PALETTE_MAPPED[text.get_text()]
+#
+#        text.set_fontsize(12)
+#        text.set_fontweight('bold')
+#        # Box around text (with rounded corners)
+#        text.set_bbox(dict(facecolor=bg, alpha=0.5, edgecolor=bg, boxstyle='round,pad=0.2'))
+#        # Text color
+#        text.set_color(fg)
+
+# Refactor: Function for a pie chart
+def create_pie_chart(fig: Figure, df: pd.DataFrame, x_groups: Question, title: str, color_palette=COLOR_PALETTE, color_palette_mapped=None):
+    # Create a new DataFrame with the counts of the values
+    counts = df.groupby(x_groups.code).size()
+
+    # Rename the group columns
+    counts.index = [x_groups.text_of_option(col) for col in counts.index]
+
+    # Plot the values
+    ax = counts.plot(kind='pie', figsize=(10, 6), title=title, ax=fig.gca(), autopct='%1.1f%%', startangle=90, colors=color_palette)
+    ax.axis('equal')
+
+    # Bold labels
+    labels_groups = [text for text in ax.texts if '%' not in text.get_text()]
+
+    for text in ax.texts:
+        text_str = text.get_text()
+
+        if '%' in text_str:
+            fg = 'white'
+            bg = 'black'
+        else:
+            fg = 'white'
+            bg = color_palette_mapped[text_str] if color_palette_mapped is not None and text_str in color_palette_mapped else color_palette[labels_groups.index(text)]
+
+        text.set_fontsize(12)
+        text.set_fontweight('bold')
+        # Box around text (with rounded corners)
+        text.set_bbox(dict(facecolor=bg, alpha=0.5, edgecolor=bg, boxstyle='round,pad=0.2'))
+        # Text color
+        text.set_color(fg)
+
+# Pie Chart for the share of students per faculty (not the questionnaire but in general)
+with SaveFig('faculty_pie_chart.svg') as fig:
+    df_without_oth = df[df[q.G01Q02.code] != '-oth-']
+
+    create_pie_chart(fig, df_without_oth, q.G01Q02, 'Share of students per faculty', color_palette=FACULTIES_COLOR_PALETTE[1:], color_palette_mapped=COLOR_PALETTE_MAPPED)
+
+# Position vs Ticket ownership
+with SaveFig('position_vs_ticket.svg') as fig:
+    create_histogram(fig, df, q.G03Q01, q.G04Q07, f'Position vs Ticket ownership', normalize=True)
+
+# Create new column for Ticket or No Ticket G04Q07.AO04 == No Ticket
+df['Ticket'] = df[q.G04Q07.code] != 'AO04'
+
+# Create new Question for the Ticket column
+HAS_TICKET = Question(
+    'Ticket',
+    'Has Ticket?',
+    {
+        True: 'Yes',
+        False: 'No'
+    },
+    q.QuestionType.OPTIONS,
+)
+
+# Position vs Ticket ownership
+with SaveFig('position_vs_ticket_boolean.svg') as fig:
+    create_histogram(
+        fig,
+        df,
+        q.G03Q01,
+        HAS_TICKET,
+        f'Support vs Ticket ownership (Boolean)',
+        normalize=True,
+        # Light Red and Light Blue
+        color_palette=['#EE6352', '#484D6D']
+    )
+
+# Pie chart for support
+with SaveFig('support_pie_chart.svg') as fig:
+    create_pie_chart(fig, df, q.G03Q01, 'What is your opinion on the introduction of the Deutschlandticket under the full solidarity model at \nReutlingen University?', color_palette=COLOR_PALETTE)
+
+# Pie chart for support of conditions (G06Q01)
+with SaveFig('support_conditions_pie_chart.svg') as fig:
+    df_without_None = df[df[q.G06Q01.code] != '']
+
+    # Dark Blue and orange from the color palette
+    create_pie_chart(fig, df_without_None, q.G06Q01, 'Do you consider the mentioned amount of 29.40€ per month (180€ per semester) to be reasonable?', color_palette=['#EE6352', '#484D6D'])
+
+# Manual: Histogram chart for the amounts considered as reasonable (numeric in G06Q02)
+with SaveFig('reasonable_amounts_histogram.svg') as fig:
+    ax = fig.gca()
+
+    # Filter all rows, that haven't answered G06Q02
+    df = df[df[q.G06Q02.code].notnull()]
+
+    # Convert the column to numeric
+    df[q.G06Q02.code] = pd.to_numeric(df[q.G06Q02.code])
+
+    # Plot the histogram
+    ax.hist(df[q.G06Q02.code], bins=20, color='#484D6D')
+
+    # Add vertical line at the mean
+    ax.axvline(df[q.G06Q02.code].mean(), color='k', linestyle='dashed', linewidth=1)
+
+    # Add vertical line at the median
+    ax.axvline(df[q.G06Q02.code].median(), color='r', linestyle='dashed', linewidth=1)
+
+    response_count = len(df[q.G06Q02.code])
+
+    # Add legend
+    ax.legend([
+        f'Mean = {df[q.G06Q02.code].mean():.2f}',
+        f'Median = {df[q.G06Q02.code].median():.2f}',
+        f'Number of responses: {response_count}'
+    ])
+
+    ax.set_title('Amounts considered reasonable')
+    ax.set_xlabel('Amount in €')
+    ax.set_ylabel('Count')
+
+# Pie chart for fairness
+with SaveFig('fairness_pie_chart.svg') as fig:
+    create_pie_chart(fig, df, q.G06Q03, "How fair do you find it that everyone pays the fee, even if they do not use the ticket?", color_palette=COLOR_PALETTE)
+
+# Manual: Distance vs. Primary mode of transportation (Bins of 5km) (Rank 1)
+## Distance from G04Q05 (numeric in km)
+with SaveFig('distance_vs_transportation.svg') as fig:
+    ax = fig.gca()
+
+    # Create normalized stacked line plot
+    df['Distance'] = pd.to_numeric(df[q.G04Q05.code])
+
+    BIN_SIZE = 10
+
+    # Create bins of 5km
+    bins = np.arange(0, 60, BIN_SIZE)
+
+    COLUMN_NAME_DIST_BINS = f'Intervals of {BIN_SIZE} km'
+
+    # Create a new column with the bins
+    df[COLUMN_NAME_DIST_BINS] = pd.cut(df['Distance'], bins)
+
+    # Create three new dfs for the bins vs the primary mode of transportation (one for each rank)
+    df_distance_vs_transportation = df.groupby([COLUMN_NAME_DIST_BINS, q.G04Q01.ranking_nth_question(1).code]).size().unstack().fillna(0)
+
+    # Normalize the values
+    df_distance_vs_transportation = df_distance_vs_transportation.div(df_distance_vs_transportation.sum(axis=1), axis=0)
+
+    # Only show bins with at least 1 entry
+    df_distance_vs_transportation = df_distance_vs_transportation[df_distance_vs_transportation.sum(axis=1) > 0]
+
+    # Drop empty modes of transportation from the columns
+    df_distance_vs_transportation = df_distance_vs_transportation.dropna(axis=1, how='all')
+
+    # Rename the mode of transportation columns
+    df_distance_vs_transportation.columns = [q.G04Q01.text_of_option(col) for col in df_distance_vs_transportation.columns]
+
+    # Plot the values
+    ax = df_distance_vs_transportation.plot(kind='area', stacked=True, figsize=(10, 6), title='Distance vs Primary mode of transportation (Rank 1)', ax=fig.gca(), color=COLOR_PALETTE)
+
+# Scatter chart for each primary mode of transportation (Rank 1): Time vs Distance; Different colors for each mode of transportation
+## Time from G04Q06 (numeric in minutes)
+## Distance from G04Q05 (numeric in km)
+## Distance on x-Axis, Time on y-Axis
+with SaveFig('time_vs_distance_scatter.svg') as fig:
+    ax = fig.gca()
+
+    for i, (_, opt) in enumerate(q.G04Q01.answers.items()):
+        mode = opt.text
+
+        # Get rows for the mode of transportation
+        df_mode = df[df[q.G04Q01.ranking_nth_question(1).code] == opt.key]
+
+        # Convert to numeric
+        df_mode[q.G04Q05.code] = pd.to_numeric(df_mode[q.G04Q05.code])
+        df_mode[q.G04Q06.code] = pd.to_numeric(df_mode[q.G04Q06.code])
+
+        # Create scatter plot
+        ax = df_mode.plot(kind='scatter', x=q.G04Q05.code, y=q.G04Q06.code, ax=ax, label=mode, color=COLOR_PALETTE[i])
+
+    ax.set_title('Time vs Distance for each primary mode of transportation (Rank 1)')
+    ax.set_xlabel('Distance in km')
+    ax.set_ylabel('Time in minutes')
+
+    # Make both axes logarithmic
+    ax.set_xscale('log')
+    # ax.set_yscale('log')
+
+# Primary mode of transportation vs money spent on transportation; As scatter plot
+## Create a non normalized non stacked bar plot
+## Money spent on transportation from G04Q04 (numeric in €)
+with SaveFig('transportation_vs_money.svg') as fig:
+    ax = fig.gca()
+
+    for i, (_, opt) in enumerate(q.G04Q01.answers.items()):
+        mode = opt.text
+
+        # Get rows for the mode of transportation
+        df_mode = df[df[q.G04Q01.ranking_nth_question(1).code] == opt.key]
+
+        # Convert to numeric
+        df_mode[q.G04Q04.code] = pd.to_numeric(df_mode[q.G04Q04.code])
+
+        # Add a horizontal box plot on top
+        ax = df_mode.boxplot(column=q.G04Q04.code, by=q.G04Q01.ranking_nth_question(1).code, ax=ax, label=mode, positions=[i], widths=0.5, patch_artist=True, boxprops=dict(facecolor=COLOR_PALETTE[i], color=COLOR_PALETTE[i]), whiskerprops=dict(color=COLOR_PALETTE[i]), medianprops=dict(color='black'))
+
+    # Set ax label to mode of transportation
+    ax.set_xticklabels([opt.text for opt in q.G04Q01.answers.values()], fontsize=8)
+
+    ax.set_title('\nPrimary mode of transportation vs. money spent on transportation')
+    ax.set_ylabel('Money spent on transportation in €/month (in general)')
+    ax.set_xlabel('Primary mode of transportation (in getting to university)')
+
